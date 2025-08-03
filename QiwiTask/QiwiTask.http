@@ -1,0 +1,6 @@
+@QiwiTask_HostAddress = http://localhost:5149
+
+GET {{QiwiTask_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
