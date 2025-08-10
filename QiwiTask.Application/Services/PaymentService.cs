@@ -3,6 +3,7 @@ using QiwiTask.Application.Interfaces;
 using QiwiTask.Domain.Entities;
 using QiwiTask.Domain.Enums;
 using QiwiTask.Domain.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace QiwiTask.Application.Services
 {
@@ -10,14 +11,19 @@ namespace QiwiTask.Application.Services
     {
         private readonly IEnumerable<IPaymentGateway> _gateways;
         private readonly IGatewaySelectionStrategy _gatewayStrategy;
+        private readonly IPaymentValidator _paymentValidator;
 
-        public PaymentService(IEnumerable<IPaymentGateway> gateways, IGatewaySelectionStrategy gatewayStrategy)
+        public PaymentService(
+            IEnumerable<IPaymentGateway> gateways, 
+            IGatewaySelectionStrategy gatewayStrategy,
+            IPaymentValidator paymentValidator)
         {
             _gateways = gateways ?? throw new ArgumentNullException(nameof(gateways));
             _gatewayStrategy = gatewayStrategy ?? throw new ArgumentNullException(nameof(gatewayStrategy));
+            _paymentValidator = paymentValidator ?? throw new ArgumentNullException(nameof(paymentValidator));
         }
 
-        public async Task<Payment> ProcessAsync(PaymentRequesstDto dto)
+        public async Task<Payment> ProcessAsync(PaymentRequesst dto)
         {
             var payment = new Payment
             {
@@ -27,6 +33,8 @@ namespace QiwiTask.Application.Services
                 DestinationAccount = dto.DestinationAccount,
                 Metadata = dto.Metadata
             };
+
+            await _paymentValidator.ValidateAsync(payment);
 
             var gateway = _gatewayStrategy.Select(payment, _gateways);
 

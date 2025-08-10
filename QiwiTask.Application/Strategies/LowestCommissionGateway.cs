@@ -4,7 +4,7 @@ using QiwiTask.Domain.Interfaces;
 
 namespace QiwiTask.Application.Strategies
 {
-    public class LowestCommissionGatewaySelector : IGatewaySelectionStrategy
+    public class LowestCommissionGateway : IGatewaySelectionStrategy
     {
         public IPaymentGateway Select(Payment payment, IEnumerable<IPaymentGateway> gateways)
         {

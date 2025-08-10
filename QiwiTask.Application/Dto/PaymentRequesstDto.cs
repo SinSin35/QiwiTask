@@ -2,7 +2,7 @@
 
 namespace QiwiTask.Application.Dto
 {
-    public class PaymentRequesstDto
+    public class PaymentRequesst
     {
         public decimal Amount { get; set; }
         public Currency Currency { get; set; }

@@ -4,8 +4,8 @@ using QiwiTask.Domain.Entities;
 
 namespace QiwiTask.Application.Interfaces
 {
-    public interface IPaymentService
+    public interface ICurrencyValidator
     {
-        Task<Payment> ProcessAsync (PaymentRequesst payment);   
+        Task ValidateAsync(Payment dto);
     }
 }

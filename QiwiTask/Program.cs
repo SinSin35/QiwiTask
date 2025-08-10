@@ -2,6 +2,9 @@
 using QiwiTask.Application.Interfaces;
 using QiwiTask.Application.Services;
 using QiwiTask.Application.Strategies;
+using QiwiTask.Application.Validation;
+using QiwiTask.Application.Validation.Implementations;
+using QiwiTask.Domain.Enums;
 using System.Text.Json.Serialization;
 
 namespace QiwiTask
@@ -24,7 +27,23 @@ namespace QiwiTask
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddScoped<IPaymentService, PaymentService>();
-            builder.Services.AddScoped<IGatewaySelectionStrategy, LowestCommissionGatewaySelector>();
+            builder.Services.AddScoped<IGatewaySelectionStrategy, LowestCommissionGateway>();
+
+            builder.Services.AddSingleton<UsdValidator>();
+            builder.Services.AddSingleton<EurValidator>();
+            builder.Services.AddSingleton<RubValidator>();
+
+            builder.Services.AddSingleton<IPaymentValidator>(sp =>
+            {
+                var validators = new Dictionary<Currency, ICurrencyValidator>
+                {
+                    { Currency.USD, sp.GetRequiredService<UsdValidator>() },
+                    { Currency.EUR, sp.GetRequiredService<EurValidator>() },
+                    { Currency.RUB, sp.GetRequiredService<RubValidator>() }
+                };
+                return new PaymentValidator(validators);
+            });
+
 
             var app = builder.Build();
 

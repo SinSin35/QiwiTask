@@ -19,7 +19,7 @@ namespace QiwiTask.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Process([FromBody] PaymentRequesstDto dto)
+        public async Task<IActionResult> Process([FromBody] PaymentRequesst dto)
         {
             if (await _journal.ExistsAsync(dto.IdempotencyKey))
             {
