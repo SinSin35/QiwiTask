@@ -6,6 +6,6 @@ namespace QiwiTask.Application.Interfaces
 {
     public interface IPaymentValidator
     {
-        Task ValidateAsync(Payment request);
+        Task ValidateAsync(PaymentRequesst request);
     }
 }

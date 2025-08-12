@@ -5,6 +5,7 @@ using QiwiTask.Application.Strategies;
 using QiwiTask.Application.Validation;
 using QiwiTask.Application.Validation.Implementations;
 using QiwiTask.Domain.Enums;
+using QiwiTask.Infrastructure.Services;
 using System.Text.Json.Serialization;
 
 namespace QiwiTask
@@ -27,7 +28,9 @@ namespace QiwiTask
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddScoped<IPaymentService, PaymentService>();
+            builder.Services.AddScoped<IBalanceVerificationService, FakeBalanceVerificationService>();
             builder.Services.AddScoped<IGatewaySelectionStrategy, LowestCommissionGateway>();
+            builder.Services.AddScoped<ICommissionProvider, FakeCommissionProvider>();
 
             builder.Services.AddSingleton<UsdValidator>();
             builder.Services.AddSingleton<EurValidator>();

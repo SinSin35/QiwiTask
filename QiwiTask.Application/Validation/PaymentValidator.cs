@@ -1,4 +1,5 @@
-﻿using QiwiTask.Application.Interfaces;
+﻿using QiwiTask.Application.Dto;
+using QiwiTask.Application.Interfaces;
 using QiwiTask.Domain.Entities;
 using QiwiTask.Domain.Enums;
 
@@ -13,7 +14,7 @@ namespace QiwiTask.Application.Validation
             _validators = validators;
         }
 
-        public Task ValidateAsync(Payment request)
+        public Task ValidateAsync(PaymentRequesst request)
         {
             if (!_validators.TryGetValue(request.Currency, out var validator))
                 throw new ArgumentException($"No validator found for currency {request.Currency}");

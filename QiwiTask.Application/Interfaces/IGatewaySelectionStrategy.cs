@@ -5,6 +5,6 @@ namespace QiwiTask.Application.Interfaces
 {
     public interface IGatewaySelectionStrategy
     {
-        IPaymentGateway Select(Payment payment, IEnumerable<IPaymentGateway> gateways);
+        Task<IPaymentGateway> SelectAsync(Payment payment, IEnumerable<IPaymentGateway> gateways);
     }
 }

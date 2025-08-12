@@ -7,7 +7,7 @@ namespace QiwiTask.Application.Validation.Implementations
 {
     public class RubValidator : ICurrencyValidator
     {
-        public Task ValidateAsync(Payment request)
+        public Task ValidateAsync(PaymentRequesst request)
         {
             string accountPattern = @"^RUB\d{10}$";
 

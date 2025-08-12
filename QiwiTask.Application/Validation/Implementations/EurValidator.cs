@@ -7,7 +7,7 @@ namespace QiwiTask.Application.Validation.Implementations
 {
     public class EurValidator : ICurrencyValidator
     {
-        public Task ValidateAsync(Payment request)
+        public Task ValidateAsync(PaymentRequesst request)
         {
             string accountPattern = @"^EUR\d{10}$";
 

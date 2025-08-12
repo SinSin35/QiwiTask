@@ -12,19 +12,27 @@ namespace QiwiTask.Application.Services
         private readonly IEnumerable<IPaymentGateway> _gateways;
         private readonly IGatewaySelectionStrategy _gatewayStrategy;
         private readonly IPaymentValidator _paymentValidator;
+        private readonly IBalanceVerificationService _balanceVerificationService;
 
         public PaymentService(
             IEnumerable<IPaymentGateway> gateways, 
             IGatewaySelectionStrategy gatewayStrategy,
-            IPaymentValidator paymentValidator)
+            IPaymentValidator paymentValidator,
+            IBalanceVerificationService balanceVerificationService)
         {
             _gateways = gateways ?? throw new ArgumentNullException(nameof(gateways));
             _gatewayStrategy = gatewayStrategy ?? throw new ArgumentNullException(nameof(gatewayStrategy));
             _paymentValidator = paymentValidator ?? throw new ArgumentNullException(nameof(paymentValidator));
+            _balanceVerificationService = balanceVerificationService;
         }
 
         public async Task<Payment> ProcessAsync(PaymentRequesst dto)
         {
+            await _paymentValidator.ValidateAsync(dto);
+
+            if (!await _balanceVerificationService.HasSufficientBalanceAsync(dto))
+                throw new InvalidOperationException("Insufficient balance for transaction");
+
             var payment = new Payment
             {
                 Amount = dto.Amount,
@@ -34,9 +42,7 @@ namespace QiwiTask.Application.Services
                 Metadata = dto.Metadata
             };
 
-            await _paymentValidator.ValidateAsync(payment);
-
-            var gateway = _gatewayStrategy.Select(payment, _gateways);
+            var gateway = await _gatewayStrategy.SelectAsync(payment, _gateways);
 
             var success = await gateway.ProcessAsync(payment);
 
