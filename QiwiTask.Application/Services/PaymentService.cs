@@ -13,17 +13,20 @@ namespace QiwiTask.Application.Services
         private readonly IGatewaySelectionStrategy _gatewayStrategy;
         private readonly IPaymentValidator _paymentValidator;
         private readonly IBalanceVerificationService _balanceVerificationService;
+        private readonly IPaymentProcessor _paymentProcessor;
 
         public PaymentService(
             IEnumerable<IPaymentGateway> gateways, 
             IGatewaySelectionStrategy gatewayStrategy,
             IPaymentValidator paymentValidator,
-            IBalanceVerificationService balanceVerificationService)
+            IBalanceVerificationService balanceVerificationService,
+            IPaymentProcessor paymentProcessor)
         {
             _gateways = gateways ?? throw new ArgumentNullException(nameof(gateways));
             _gatewayStrategy = gatewayStrategy ?? throw new ArgumentNullException(nameof(gatewayStrategy));
             _paymentValidator = paymentValidator ?? throw new ArgumentNullException(nameof(paymentValidator));
             _balanceVerificationService = balanceVerificationService;
+            _paymentProcessor = paymentProcessor;
         }
 
         public async Task<Payment> ProcessAsync(PaymentRequesst dto)
@@ -44,7 +47,7 @@ namespace QiwiTask.Application.Services
 
             var gateway = await _gatewayStrategy.SelectAsync(payment, _gateways);
 
-            var success = await gateway.ProcessAsync(payment);
+            var success = await _paymentProcessor.ProcessWithRetryAsync(gateway, payment);
 
             payment.Status = success ? PaymentStatus.Processed : PaymentStatus.Failed;
             payment.ProcessedAt = DateTime.UtcNow;
